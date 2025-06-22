@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Correction Test - Currency Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-input {
+            width: 200px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .test-result {
+            background: #e8f5e8;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .test-error {
+            background: #ffe8e8;
+            color: #d32f2f;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .debug-log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Correction Test - Currency Converter</h1>
+    
+    <div class="test-section">
+        <h2>1. Test extractNumber() Function</h2>
+        <p>Test the corrected function to extract numbers from different formats:</p>
+        
+        <input type="text" id="testInput" class="test-input" placeholder="Enter a value (ex: 100.000)">
+        <button onclick="testExtraction()">Test Extraction</button>
+        <button onclick="testPredefinedCases()">Test Predefined Cases</button>
+        
+        <div id="extracaoResult" class="test-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Real-time Formatting Test</h2>
+        <p>Test the formatting that should not reset the value:</p>
+        
+        <input type="text" id="formatacaoInput" class="test-input" placeholder="Type numbers">
+        <div id="formatacaoResult" class="test-result">Type numbers to see formatting</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Conversion API Test</h2>
+        <p>Test direct conversion via API:</p>
+        
+        <input type="text" id="apiInput" class="test-input" placeholder="Value (ex: 100000)" value="100000">
+        <button onclick="testAPI()">Test API USD → BRL</button>
+        <button onclick="testRate()">View USD/BRL Rate</button>
+        
+        <div id="apiResult" class="test-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. Debug Log</h2>
+        <div id="debugLog" class="debug-log"></div>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <script>
+        // Log function
+        function log(message) {
+            const logDiv = document.getElementById('debugLog');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+        
+        function clearLog() {
+            document.getElementById('debugLog').innerHTML = '';
+        }
+        
+        // CORRECTED function to extract number
+        function extractNumber(valueString) {
+            if (!valueString) return 0;
+            
+            log('Extracting from: ' + valueString);
+            
+            // Remove spaces and convert to string
+            let clean = valueString.toString().trim();
+            
+            // If it has comma, it's Brazilian format (1.000,50)
+            if (clean.includes(',')) {
+                // Remove dots (thousand separators) and replace comma with dot
+                clean = clean.replace(/\./g, '').replace(',', '.');
+            }
+            // If no comma, it can be American format or just number
+            else {
+                // If it has only one dot and numbers after, it's American decimal (1000.50)
+                // If it has multiple dots, they are Brazilian separators (1.000.000)
+                let dots = clean.split('.');
+                if (dots.length > 2) {
+                    // Multiple dots = Brazilian separators (1.000.000)
+                    clean = clean.replace(/\./g, '');
+                }
+                // If it has only one dot with 1-2 digits after, it's decimal
+                else if (dots.length === 2 && dots[1].length <= 2) {
+                    // Keep as is (1000.50)
+                }
+                // Otherwise, remove dots (they are separators)
+                else if (dots.length === 2 && dots[1].length > 2) {
+                    clean = clean.replace(/\./g, '');
+                }
+            }
+            
+            let result = parseFloat(clean) || 0;
+            log('Extracted result: ' + result);
+            return result;
+        }
+        
+        // SIMPLIFIED VERSION that does NOT reset
+        function formatDuringTyping(input) {
+            let value = input.value;
+            let cursorPosition = input.selectionStart;
+            
+            log('Formatting: ' + value + ' (Cursor at: ' + cursorPosition + ')');
+            
+            // Remove everything that is not number or comma
+            let cleanNumber = value.replace(/[^\d,]/g, '');
+            
+            // If empty, do nothing
+            if (!cleanNumber) {
+                return;
+            }
+            
+            // Split integer and decimal parts
+            let parts = cleanNumber.split(',');
+            let integerPart = parts[0];
+            let decimalPart = parts[1];
+            
+            // CHECK if integer part is not empty
+            if (!integerPart) {
+                return;
+            }
+            
+            // Format integer part with separators
+            let formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            
+            // Build final value
+            let finalValue = formattedIntegerPart;
+            if (decimalPart !== undefined) {
+                // Limit decimals to 2 digits
+                decimalPart = decimalPart.substring(0, 2);
+                finalValue += ',' + decimalPart;
+            }
+            
+            // ONLY update if it really changed
+            if (finalValue !== value) {
+                input.value = finalValue;
+                
+                // Place cursor at the end
+                setTimeout(() => {
+                    let newPos = finalValue.length;
+                    input.setSelectionRange(newPos, newPos);
+                }, 0);
+            }
+            
+            log('Final value: ' + finalValue);
+        }
+        
+        // Extraction test
+        function testExtraction() {
+            const input = document.getElementById('testInput').value;
+            const result = extractNumber(input);
+            const resultDiv = document.getElementById('extracaoResult');
+            resultDiv.innerHTML = `<strong>Input:</strong> "${input}"<br><strong>Result:</strong> ${result}`;
+        }
+        
+        // Predefined cases test
+        function testPredefinedCases() {
+            const cases = [
+                '100.000',
+                '100.000,50',
+                '1000.50',
+                '1.000.000',
+                '100000',
+                '100,50'
+            ];
+            
+            let results = '<h3>Test Cases:</h3>';
+            cases.forEach(case_ => {
+                const result = extractNumber(case_);
+                results += `<strong>${case_}</strong> → ${result}<br>`;
+            });
+            
+            document.getElementById('extracaoResult').innerHTML = results;
+        }
+        
+        // Formatting test
+        document.getElementById('formatacaoInput').addEventListener('input', function(e) {
+            formatDuringTyping(e.target);
+            document.getElementById('formatacaoResult').innerHTML = 
+                `<strong>Formatted value:</strong> ${e.target.value}`;
+        });
+        
+        // API test
+        async function testAPI() {
+            const value = document.getElementById('apiInput').value;
+            const amount = extractNumber(value);
+            
+            log('=== API TEST ===');
+            log('Input value: ' + value);
+            log('Extracted amount: ' + amount);
+            
+            try {
+                const url = `/api/convert?from=USD&to=BRL&amount=${amount}`;
+                log('URL: ' + url);
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                log('Status: ' + response.status);
+                log('Response: ' + JSON.stringify(data, null, 2));
+                
+                if (data.error) {
+                    document.getElementById('apiResult').innerHTML = 
+                        `<div class="test-error">Error: ${data.error}</div>`;
+                } else {
+                    const formattedValue = data.result.toLocaleString('pt-BR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                    
+                    document.getElementById('apiResult').innerHTML = 
+                        `<strong>Rate:</strong> ${data.rate}<br>` +
+                        `<strong>Raw result:</strong> ${data.result}<br>` +
+                        `<strong>Formatted result:</strong> ${formattedValue}`;
+                }
+            } catch (error) {
+                log('ERROR: ' + error.message);
+                document.getElementById('apiResult').innerHTML = 
+                    `<div class="test-error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Rate test
+        async function testRate() {
+            try {
+                const response = await fetch('/test-rate/USD/BRL');
+                const data = await response.json();
+                
+                log('=== RATE TEST ===');
+                log('USD/BRL Rate: ' + data.rate);
+                log('Examples: ' + JSON.stringify(data.examples, null, 2));
+                
+                document.getElementById('apiResult').innerHTML = 
+                    `<strong>USD/BRL Rate:</strong> ${data.rate}<br>` +
+                    `<strong>Examples:</strong><br>` +
+                    `1 USD = ${data.examples['1'].toLocaleString('pt-BR', {minimumFractionDigits: 2})} BRL<br>` +
+                    `100 USD = ${data.examples['100'].toLocaleString('pt-BR', {minimumFractionDigits: 2})} BRL<br>` +
+                    `1.000 USD = ${data.examples['1000'].toLocaleString('pt-BR', {minimumFractionDigits: 2})} BRL<br>` +
+                    `100.000 USD = ${data.examples['100000'].toLocaleString('pt-BR', {minimumFractionDigits: 2})} BRL`;
+            } catch (error) {
+                log('ERROR: ' + error.message);
+                document.getElementById('apiResult').innerHTML = 
+                    `<div class="test-error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Initialize
+        log('Test page loaded');
+        log('Test the corrected functions above');
+    </script>
+</body>
+</html> 
