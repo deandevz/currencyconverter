@@ -49,7 +49,10 @@ A modern and intuitive currency converter built with Node.js and vanilla JavaScr
 - **Styling:** Custom CSS with modern design
 - **Fonts:** Inter (Google Fonts)
 
-[Screenshot](https://i.imgur.com/oIdYAf0.jpeg)
+## 📸 Screenshot
+
+<img src="https://i.imgur.com/oIdYAf0.jpeg" alt="Interface Screenshot" width="700"/>
+<img src="https://i.imgur.com/b2nXDvQ.png" alt="Interface Screenshot" width="700"/>
 
 ## 📁 Project Structure
 
