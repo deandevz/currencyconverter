@@ -49,6 +49,8 @@ A modern and intuitive currency converter built with Node.js and vanilla JavaScr
 - **Styling:** Custom CSS with modern design
 - **Fonts:** Inter (Google Fonts)
 
+[Screenshot](https://i.imgur.com/oIdYAf0.jpeg)
+
 ## 📁 Project Structure
 
 ```
