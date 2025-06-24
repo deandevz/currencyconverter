@@ -166,7 +166,10 @@ function generateHTML(data = {}) {
         <div class="currency-option" data-currency="GBP">GBP - British Pound</div>
         <div class="currency-option" data-currency="PYG">PYG - Paraguayan Guarani</div>
     </div>
-    
+
+    <!-- Theme toggle button -->
+    <div class="theme-toggle" id="themeToggle">&#9728;</div>
+
     <!-- External script -->
     <script src="/script.js"></script>
 </body>

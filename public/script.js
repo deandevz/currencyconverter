@@ -420,4 +420,38 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM loaded');
     converter = new AutomaticConverter();
     console.log('Converter initialized');
-}); 
+
+    applyStoredTheme();
+    const btn = document.getElementById('themeToggle');
+    if (btn) {
+        btn.addEventListener('click', () => {
+            toggleTheme();
+        });
+    }
+});
+
+function applyStoredTheme() {
+    const theme = localStorage.getItem('theme') || 'dark';
+    document.body.classList.toggle('light', theme === 'light');
+    updateThemeIcon(theme);
+}
+
+function toggleTheme() {
+    const isLight = document.body.classList.toggle('light');
+    const theme = isLight ? 'light' : 'dark';
+    localStorage.setItem('theme', theme);
+    updateThemeIcon(theme);
+
+    const btn = document.getElementById('themeToggle');
+    if (btn) {
+        btn.classList.add('spin');
+        setTimeout(() => btn.classList.remove('spin'), 500);
+    }
+}
+
+function updateThemeIcon(theme) {
+    const btn = document.getElementById('themeToggle');
+    if (btn) {
+        btn.textContent = theme === 'light' ? '\ud83c\udf19' : '\u2600\ufe0f';
+    }
+}

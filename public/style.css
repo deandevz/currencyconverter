@@ -13,6 +13,21 @@
   --success: #28a745;
 }
 
+/* ===== VARI\u00c1VEIS CSS - PALETA LIGHT ===== */
+body.light {
+  --bg-primary: #fdfdfd;
+  --bg-secondary: #ffffff;
+  --accent-green: #7dd87f;
+  --text-primary: #000000;
+  --text-secondary: #555555;
+  --text-muted: #888888;
+  --border-color: #dddddd;
+  --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --glow-green: 0 0 20px rgba(125, 216, 127, 0.3);
+  --error: #dc3545;
+  --success: #28a745;
+}
+
 /* ===== RESET E BASE ===== */
 * {
   margin: 0;
@@ -33,6 +48,7 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ===== CONTAINER PRINCIPAL ===== */
@@ -393,4 +409,35 @@ body {
     margin-top: 1.5rem;
     font-size: 0.8rem;
   }
-} 
+}
+
+/* ===== BOT\u00c3O DE TROCA DE TEMA ===== */
+.theme-toggle {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-dark);
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover {
+  transform: rotate(20deg) scale(1.1);
+}
+
+.theme-toggle.spin {
+  animation: spin 0.5s ease;
+}
+
+@keyframes spin {
+  from { transform: rotate(0); }
+  to { transform: rotate(360deg); }
+}
